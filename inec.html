@@ -193,246 +193,93 @@
   </section>
 </main>
 
-
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-
-    // ==========================================
-    // 1. ELECTION DETAILS
-    // ==========================================
-
-    const elections = [
-        {
-            title: "Presidential / National<br>Assembly Election",
-            date: "January 16, 2027",
-            iso: "2027-01-16T08:00:00+01:00"
-        },
-        {
-            title: "Governorship / State<br>Assembly Election",
-            date: "Date to be confirmed",
-            iso: null
-        },
-        {
-            title: "Local Government<br>Election",
-            date: "Date to be confirmed",
-            iso: null
-        }
-    ];
-
-    let currentElection = 0;
-
-    // Helper function to select HTML elements.
-    const $ = (id) => document.getElementById(id);
-
-
-    // ==========================================
-    // 2. DISPLAY THE SELECTED ELECTION
-    // ==========================================
-
-    function renderElection() {
-        const election = elections[currentElection];
-
-        $("electionTitle").innerHTML = election.title;
-        $("electionDate").textContent = election.date;
-
-        // Calculate the countdown immediately.
-        updateCountdown();
-    }
-
-
-    // ==========================================
-    // 3. AUTOMATIC COUNTDOWN FUNCTION
-    // ==========================================
+(function () {
+    // Election date: January 16, 2027, at 8:00 AM Nigerian time.
+    const electionDate = new Date(
+        "2027-01-16T08:00:00+01:00"
+    ).getTime();
 
     function updateCountdown() {
-        const election = elections[currentElection];
+        const now = Date.now();
+        let remaining = electionDate - now;
 
-        // If the election date has not been announced.
-        if (!election.iso) {
-            ["months", "days", "hours", "minutes"].forEach(id => {
-                $(id).textContent = "—";
-            });
+        const ids = ["months", "days", "hours", "minutes"];
 
-            return;
-        }
-
-        const now = new Date();
-        const target = new Date(election.iso);
-
-        // Calculate the remaining time.
-        const remaining = target.getTime() - now.getTime();
-
-        // If the election date has passed.
+        // Stop at zero when the election date has passed.
         if (remaining <= 0) {
-            $("months").textContent = "00";
-            $("days").textContent = "00";
-            $("hours").textContent = "00";
-            $("minutes").textContent = "00";
+            ids.forEach(function (id) {
+                const element = document.getElementById(id);
+                if (element) element.textContent = "00";
+            });
             return;
         }
 
-        // Calculate complete calendar months remaining.
+        // Calculate calendar months.
+        const target = new Date(electionDate);
+        const current = new Date();
+
         let months =
-            (target.getFullYear() - now.getFullYear()) * 12 +
-            (target.getMonth() - now.getMonth());
+            (target.getFullYear() - current.getFullYear()) * 12 +
+            target.getMonth() - current.getMonth();
 
-        let monthAnchor = new Date(now);
+        const monthDate = new Date(current);
+        monthDate.setMonth(monthDate.getMonth() + months);
 
-        monthAnchor.setMonth(
-            monthAnchor.getMonth() + Math.max(0, months)
-        );
-
-        if (monthAnchor > target) {
+        if (monthDate > target) {
             months--;
         }
 
         months = Math.max(0, months);
 
-        // Calculate the remaining days after complete months.
-        const afterMonths = new Date(now);
+        // Calculate the remaining time after complete months.
+        const anchor = new Date(current);
+        anchor.setMonth(anchor.getMonth() + months);
 
-        afterMonths.setMonth(
-            afterMonths.getMonth() + months
-        );
-
-        let timeLeft = target.getTime() - afterMonths.getTime();
+        remaining = electionDate - anchor.getTime();
 
         const days = Math.floor(
-            timeLeft / (1000 * 60 * 60 * 24)
+            remaining / (1000 * 60 * 60 * 24)
         );
 
-        timeLeft %= 1000 * 60 * 60 * 24;
+        remaining %= 1000 * 60 * 60 * 24;
 
         const hours = Math.floor(
-            timeLeft / (1000 * 60 * 60)
+            remaining / (1000 * 60 * 60)
         );
 
-        timeLeft %= 1000 * 60 * 60;
+        remaining %= 1000 * 60 * 60;
 
         const minutes = Math.floor(
-            timeLeft / (1000 * 60)
+            remaining / (1000 * 60)
         );
 
-        // Display the countdown with two digits.
-        $("months").textContent =
-            String(months).padStart(2, "0");
+        // Update the page safely.
+        const values = {
+            months: months,
+            days: days,
+            hours: hours,
+            minutes: minutes
+        };
 
-        $("days").textContent =
-            String(Math.max(0, days)).padStart(2, "0");
+        Object.keys(values).forEach(function (id) {
+            const element = document.getElementById(id);
 
-        $("hours").textContent =
-            String(hours).padStart(2, "0");
-
-        $("minutes").textContent =
-            String(minutes).padStart(2, "0");
+            if (element) {
+                element.textContent = String(
+                    values[id]
+                ).padStart(2, "0");
+            }
+        });
     }
 
+    // Run immediately when the script loads.
+    updateCountdown();
 
-    // ==========================================
-    // 4. PREVIOUS ELECTION BUTTON
-    // ==========================================
-
-    $("previousElection").addEventListener("click", function () {
-
-        currentElection =
-            (currentElection - 1 + elections.length) %
-            elections.length;
-
-        renderElection();
-    });
-
-
-    // ==========================================
-    // 5. NEXT ELECTION BUTTON
-    // ==========================================
-
-    $("nextElection").addEventListener("click", function () {
-
-        currentElection =
-            (currentElection + 1) % elections.length;
-
-        renderElection();
-    });
-
-
-    // ==========================================
-    // 6. SEARCH BUTTON
-    // ==========================================
-
-    $("searchToggle").addEventListener("click", function () {
-
-        $("searchPanel").classList.toggle("open");
-
-        if ($("searchPanel").classList.contains("open")) {
-            $("searchInput").focus();
-        }
-    });
-
-
-    // ==========================================
-    // 7. MENU BUTTON
-    // ==========================================
-
-    $("menuToggle").addEventListener("click", function () {
-
-        $("menuPanel").classList.toggle("open");
-    });
-
-
-    // ==========================================
-    // 8. SEARCH FUNCTIONALITY
-    // ==========================================
-
-    $("searchInput").addEventListener("keydown", function (event) {
-
-        if (event.key === "Enter") {
-
-            const query = event.target.value
-                .toLowerCase()
-                .trim();
-
-            const targets = [
-                "upcoming elections",
-                "election calendar",
-                "voter information"
-            ];
-
-            const match = targets.findIndex(label =>
-                label.includes(query) ||
-                query.includes(label)
-            );
-
-            if (match === 0) {
-                location.hash = "#upcoming";
-            } else if (match === 1) {
-                location.hash = "#information";
-            } else {
-                alert(
-                    "No matching section found. Try calendar or voter information."
-                );
-            }
-        }
-    });
-
-
-    // ==========================================
-    // 9. DISPLAY CURRENT YEAR
-    // ==========================================
-
-    $("year").textContent = new Date().getFullYear();
-
-
-    // ==========================================
-    // 10. START THE AUTOMATIC COUNTDOWN
-    // ==========================================
-
-    // Calculate immediately when the page loads.
-    renderElection();
-
-    // Update every second while the page is open.
+    // Update automatically every second.
     setInterval(updateCountdown, 1000);
 
-});
+})();
 </script>
 </body>
 </html>
