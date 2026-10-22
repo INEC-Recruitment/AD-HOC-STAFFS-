@@ -6,6 +6,53 @@
 <meta name="theme-color" content="#16813b">
 <title>Election Information </title>
 <style>
+  .primary-link {
+    display: block;
+    width: 100%;
+    max-width: 800px;
+    margin: 25px auto;
+    padding: 20px 25px;
+
+    background: linear-gradient(135deg, #008a35, #28b463);
+    color: #ffffff;
+
+    border: 3px solid #b8f5c9;
+    border-radius: 18px;
+
+    text-align: center;
+    text-decoration: none;
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+    font-weight: bold;
+    line-height: 1.5;
+
+    box-shadow: 0 6px 18px rgba(0, 138, 53, 0.25);
+    transition: all 0.3s ease;
+}
+
+/* Hover effect */
+.primary-link:hover {
+    background: linear-gradient(135deg, #006b2a, #159447);
+    border-color: #008a35;
+    color: #ffffff;
+
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 138, 53, 0.35);
+}
+
+/* Click effect */
+.primary-link:active {
+    transform: scale(0.98);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 600px) {
+    .primary-link {
+        font-size: 15px;
+        padding: 16px;
+        border-radius: 14px;
+    }
+}
   :root {
     --green: #238b45;
     --green-dark: #176b32;
@@ -180,7 +227,7 @@
    class="primary-link"
    target="_blank"
    rel="noopener noreferrer">
-   Click Here To Apply For INEC AD-HOC STAFFS Recruitment 
+   🗳️ Click Here to Apply for INEC AD-HOC Staff Recruitment
 </a>
 
   <section class="below">
